@@ -1,0 +1,208 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dashboard | Clothique</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; background: #f0f2f5; color: #333; }
+        
+        /* Sidebar + Main Layout */
+        .dashboard-container { display: flex; min-height: 100vh; }
+        
+        /* Sidebar */
+        .sidebar { width: 260px; background: #1a1a2e; color: white; padding: 2rem 1rem; position: fixed; height: 100vh; overflow-y: auto; }
+        .sidebar-logo { font-size: 1.5rem; font-weight: bold; color: #e94560; margin-bottom: 2rem; text-align: center; }
+        .nav-item { display: flex; align-items: center; gap: 1rem; padding: 1rem; border-radius: 10px; cursor: pointer; transition: all 0.3s; margin-bottom: 0.5rem; text-decoration: none; color: white; }
+        .nav-item:hover, .nav-item.active { background: rgba(233, 69, 96, 0.2); color: #e94560; }
+        .nav-item i { font-size: 1.2rem; }
+        
+        /* Main Content */
+        .main-content { margin-left: 260px; flex: 1; padding: 2rem; }
+        
+        /* Header */
+        .dashboard-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 2rem; background: white; padding: 1.5rem; border-radius: 15px; box-shadow: 0 2px 10px rgba(0,0,0,0.05); }
+        .welcome-text h1 { color: #1a1a2e; font-size: 1.8rem; }
+        .welcome-text p { color: #666; margin-top: 0.3rem; }
+        .user-badge { display: flex; align-items: center; gap: 1rem; }
+        .user-avatar { width: 45px; height: 45px; background: #e94560; color: white; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-weight: bold; font-size: 1.2rem; }
+        .logout-btn { padding: 0.6rem 1.2rem; background: #ff4757; color: white; border: none; border-radius: 8px; cursor: pointer; font-weight: 600; transition: all 0.3s; }
+        .logout-btn:hover { background: #e04040; }
+        
+        /* Stats Cards */
+        .stats-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 1.5rem; margin-bottom: 2rem; }
+        .stat-card { background: white; padding: 1.5rem; border-radius: 15px; box-shadow: 0 2px 10px rgba(0,0,0,0.05); }
+        .stat-card h3 { color: #666; font-size: 0.9rem; margin-bottom: 0.5rem; }
+        .stat-value { font-size: 2rem; font-weight: bold; color: #1a1a2e; }
+        .stat-change { color: #2ed573; font-size: 0.9rem; margin-top: 0.3rem; }
+        
+        /* Recent Orders */
+        .orders-section { background: white; padding: 2rem; border-radius: 15px; box-shadow: 0 2px 10px rgba(0,0,0,0.05); }
+        .section-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 1.5rem; }
+        .section-header h2 { color: #1a1a2e; }
+        .view-all { color: #e94560; text-decoration: none; font-weight: 600; }
+        
+        table { width: 100%; border-collapse: collapse; }
+        th, td { padding: 1rem; text-align: left; border-bottom: 1px solid #f0f0f0; }
+        th { color: #666; font-weight: 600; font-size: 0.9rem; }
+        .status { padding: 0.4rem 0.8rem; border-radius: 20px; font-size: 0.85rem; font-weight: 600; }
+        .status-delivered { background: #d4edda; color: #155724; }
+        .status-pending { background: #fff3cd; color: #856404; }
+        .status-processing { background: #cce5ff; color: #004085; }
+        
+        /* Welcome Banner */
+        .welcome-banner { background: linear-gradient(135deg, #e94560, #ff6b6b); color: white; padding: 2rem; border-radius: 15px; margin-bottom: 2rem; display: none; animation: fadeIn 0.8s ease; }
+        .welcome-banner h2 { font-size: 1.5rem; margin-bottom: 0.5rem; }
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(-20px); } to { opacity: 1; transform: translateY(0); } }
+        
+        @media (max-width: 768px) { .sidebar { width: 100%; position: relative; height: auto; } .main-content { margin-left: 0; } .dashboard-container { flex-direction: column; } }
+    </style>
+</head>
+<body>
+    <div class="dashboard-container">
+        <!-- Sidebar -->
+        <aside class="sidebar">
+            <div class="sidebar-logo">CLOTHIQUE</div>
+            <a href="index.html" class="nav-item">🏠 Home</a>
+            <a href="dashboard.html" class="nav-item active">📊 Dashboard</a>
+            <a href="products.html" class="nav-item">🛍️ Products</a>
+            <a href="#" class="nav-item">🛒 Orders</a>
+            <a href="#" class="nav-item">⚙️ Settings</a>
+        </aside>
+        
+        <!-- Main Content -->
+        <main class="main-content">
+            <!-- Welcome Banner -->
+            <div class="welcome-banner" id="welcomeBanner">
+                <h2 id="welcomeTitle">Welcome back!</h2>
+                <p>Great to see you again. Check out our latest arrivals.</p>
+            </div>
+            
+            <!-- Header -->
+            <div class="dashboard-header">
+                <div class="welcome-text">
+                    <h1>My Dashboard</h1>
+                    <p>Track your orders and activity</p>
+                </div>
+                <div class="user-badge">
+                    <div class="user-avatar" id="userAvatar">U</div>
+                    <div>
+                        <div style="font-weight: 600;" id="userName">User</div>
+                        <div style="font-size: 0.85rem; color: #666;">Customer</div>
+                    </div>
+                    <button class="logout-btn" onclick="logout()">Logout</button>
+                </div>
+            </div>
+            
+            <!-- Stats -->
+            <div class="stats-grid">
+                <div class="stat-card">
+                    <h3>TOTAL ORDERS</h3>
+                    <div class="stat-value">12</div>
+                    <div class="stat-change">↑ 2 this month</div>
+                </div>
+                <div class="stat-card">
+                    <h3>CART ITEMS</h3>
+                    <div class="stat-value" id="cartCount">0</div>
+                    <div class="stat-change">Items waiting</div>
+                </div>
+                <div class="stat-card">
+                    <h3>WISHLIST</h3>
+                    <div class="stat-value">5</div>
+                    <div class="stat-change">Saved items</div>
+                </div>
+                <div class="stat-card">
+                    <h3>TOTAL SPENT</h3>
+                    <div class="stat-value">$489.50</div>
+                    <div class="stat-change">Lifetime</div>
+                </div>
+            </div>
+            
+            <!-- Recent Orders -->
+            <div class="orders-section">
+                <div class="section-header">
+                    <h2>Recent Orders</h2>
+                    <a href="#" class="view-all">View All →</a>
+                </div>
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Order ID</th>
+                            <th>Product</th>
+                            <th>Date</th>
+                            <th>Amount</th>
+                            <th>Status</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td>#ORD-001</td>
+                            <td>Classic Blue Jeans</td>
+                            <td>May 15, 2026</td>
+                            <td>$49.99</td>
+                            <td><span class="status status-delivered">Delivered</span></td>
+                        </tr>
+                        <tr>
+                            <td>#ORD-002</td>
+                            <td>Vintage Denim Jacket</td>
+                            <td>May 20, 2026</td>
+                            <td>$79.99</td>
+                            <td><span class="status status-processing">Processing</span></td>
+                        </tr>
+                        <tr>
+                            <td>#ORD-003</td>
+                            <td>Premium Cotton Tee</td>
+                            <td>May 28, 2026</td>
+                            <td>$29.99</td>
+                            <td><span class="status status-pending">Pending</span></td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </main>
+    </div>
+
+    <script>
+        // Check authentication and load user data
+        window.onload = function() {
+            const currentUser = JSON.parse(localStorage.getItem('clothique_current_user'));
+            
+            if (!currentUser) {
+                // Redirect to login if not authenticated
+                window.location.href = 'login.html';
+                return;
+            }
+            
+            // Display user info
+            document.getElementById('userName').textContent = currentUser.fullname;
+            document.getElementById('userAvatar').textContent = currentUser.fullname.charAt(0).toUpperCase();
+            
+            // Check for welcome message
+            const welcomeName = localStorage.getItem('clothique_welcome');
+            if (welcomeName) {
+                const banner = document.getElementById('welcomeBanner');
+                document.getElementById('welcomeTitle').textContent = `Welcome back, ${welcomeName}!`;
+                banner.style.display = 'block';
+                
+                // Hide after 5 seconds
+                setTimeout(() => {
+                    banner.style.display = 'none';
+                }, 5000);
+                
+                localStorage.removeItem('clothique_welcome');
+            }
+            
+            // Update cart count
+            const cart = JSON.parse(localStorage.getItem('clothique_cart')) || [];
+            document.getElementById('cartCount').textContent = cart.length;
+        };
+        
+        function logout() {
+            localStorage.removeItem('clothique_current_user');
+            localStorage.removeItem('clothique_welcome');
+            window.location.href = 'login.html';
+        }
+    </script>
+</body>
+</html>

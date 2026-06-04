@@ -1,0 +1,169 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Sign Up | Clothique</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; background: linear-gradient(135deg, #1a1a2e 0%, #16213e 100%); min-height: 100vh; display: flex; align-items: center; justify-content: center; padding: 2rem; }
+        
+        .signup-container { background: white; padding: 3rem; border-radius: 20px; box-shadow: 0 20px 60px rgba(0,0,0,0.3); width: 100%; max-width: 450px; }
+        .logo-text { text-align: center; font-size: 2rem; font-weight: bold; color: #e94560; margin-bottom: 0.5rem; }
+        .subtitle { text-align: center; color: #666; margin-bottom: 2rem; }
+        
+        .form-group { margin-bottom: 1.5rem; }
+        label { display: block; margin-bottom: 0.5rem; color: #1a1a2e; font-weight: 600; }
+        input { width: 100%; padding: 0.9rem; border: 2px solid #e0e0e0; border-radius: 10px; font-size: 1rem; transition: border-color 0.3s; }
+        input:focus { outline: none; border-color: #e94560; }
+        .error { color: #e94560; font-size: 0.85rem; margin-top: 0.3rem; display: none; }
+        
+        .password-strength { height: 4px; background: #e0e0e0; border-radius: 2px; margin-top: 0.5rem; overflow: hidden; }
+        .strength-bar { height: 100%; width: 0; transition: all 0.3s; border-radius: 2px; }
+        .strength-weak { width: 33%; background: #ff4757; }
+        .strength-medium { width: 66%; background: #ffa502; }
+        .strength-strong { width: 100%; background: #2ed573; }
+        
+        .btn-signup { width: 100%; padding: 1rem; background: #e94560; color: white; border: none; border-radius: 10px; font-size: 1.1rem; font-weight: bold; cursor: pointer; transition: all 0.3s; margin-top: 1rem; }
+        .btn-signup:hover { background: #c73e54; transform: translateY(-2px); box-shadow: 0 5px 20px rgba(233, 69, 96, 0.4); }
+        
+        .login-link { text-align: center; margin-top: 1.5rem; color: #666; }
+        .login-link a { color: #e94560; text-decoration: none; font-weight: 600; }
+        
+        .success-message { background: #2ed573; color: white; padding: 1rem; border-radius: 10px; text-align: center; margin-bottom: 1rem; display: none; }
+        
+        @media (max-width: 480px) { .signup-container { padding: 2rem 1.5rem; } }
+    </style>
+</head>
+<body>
+    <div class="signup-container">
+        <div class="logo-text">CLOTHIQUE</div>
+        <p class="subtitle">Create your account</p>
+        
+        <div class="success-message" id="successMsg"></div>
+        
+        <form id="signupForm">
+            <div class="form-group">
+                <label for="fullname">Full Name</label>
+                <input type="text" id="fullname" placeholder="Enter your full name" required>
+                <span class="error" id="nameError">Please enter your full name</span>
+            </div>
+            
+            <div class="form-group">
+                <label for="email">Email Address</label>
+                <input type="email" id="email" placeholder="your@email.com" required>
+                <span class="error" id="emailError">Please enter a valid email</span>
+            </div>
+            
+            <div class="form-group">
+                <label for="phone">Phone Number</label>
+                <input type="tel" id="phone" placeholder="07XX XXX XXX" required>
+                <span class="error" id="phoneError">Enter valid phone number</span>
+            </div>
+            
+            <div class="form-group">
+                <label for="password">Password</label>
+                <input type="password" id="password" placeholder="Create a strong password" required>
+                <div class="password-strength">
+                    <div class="strength-bar" id="strengthBar"></div>
+                </div>
+                <span class="error" id="passError">Password must be at least 6 characters</span>
+            </div>
+            
+            <div class="form-group">
+                <label for="confirmPassword">Confirm Password</label>
+                <input type="password" id="confirmPassword" placeholder="Confirm your password" required>
+                <span class="error" id="confirmError">Passwords do not match</span>
+            </div>
+            
+            <button type="submit" class="btn-signup">Create Account</button>
+        </form>
+        
+        <p class="login-link">Already have an account? <a href="login.html">Login here</a></p>
+    </div>
+
+    <script>
+        const form = document.getElementById('signupForm');
+        const password = document.getElementById('password');
+        const strengthBar = document.getElementById('strengthBar');
+        
+        // Password strength checker
+        password.addEventListener('input', function() {
+            const val = this.value;
+            strengthBar.className = 'strength-bar';
+            if (val.length > 0) {
+                if (val.length < 6) strengthBar.classList.add('strength-weak');
+                else if (val.length < 10 || !/[A-Z]/.test(val) || !/[0-9]/.test(val)) strengthBar.classList.add('strength-medium');
+                else strengthBar.classList.add('strength-strong');
+            }
+        });
+        
+        // Form validation and submission
+        form.addEventListener('submit', function(e) {
+            e.preventDefault();
+            let isValid = true;
+            
+            // Reset errors
+            document.querySelectorAll('.error').forEach(err => err.style.display = 'none');
+            
+            // Validate name
+            const fullname = document.getElementById('fullname').value.trim();
+            if (fullname.length < 3) { document.getElementById('nameError').style.display = 'block'; isValid = false; }
+            
+            // Validate email
+            const email = document.getElementById('email').value.trim();
+            const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+            if (!emailRegex.test(email)) { document.getElementById('emailError').style.display = 'block'; isValid = false; }
+            
+            // Validate phone
+            const phone = document.getElementById('phone').value.trim();
+            if (phone.length < 10) { document.getElementById('phoneError').style.display = 'block'; isValid = false; }
+            
+            // Validate password
+            const pass = password.value;
+            if (pass.length < 6) { document.getElementById('passError').style.display = 'block'; isValid = false; }
+            
+            // Validate confirm password
+            const confirmPass = document.getElementById('confirmPassword').value;
+            if (pass !== confirmPass) { document.getElementById('confirmError').style.display = 'block'; isValid = false; }
+            
+            if (isValid) {
+                // Save user to localStorage (simulating database)
+                const userData = {
+                    fullname: fullname,
+                    email: email,
+                    phone: phone,
+                    password: pass,
+                    createdAt: new Date().toISOString()
+                };
+                
+                // Store user
+                let users = JSON.parse(localStorage.getItem('clothique_users')) || [];
+                
+                // Check if email already exists
+                if (users.find(u => u.email === email)) {
+                    alert('Email already registered! Please login.');
+                    return;
+                }
+                
+                users.push(userData);
+                localStorage.setItem('clothique_users', JSON.stringify(users));
+                
+                // Set current user and welcome message
+                localStorage.setItem('clothique_current_user', JSON.stringify(userData));
+                localStorage.setItem('clothique_welcome', fullname);
+                
+                // Show success message
+                const successMsg = document.getElementById('successMsg');
+                successMsg.textContent = `Welcome back, ${fullname}! Account created successfully.`;
+                successMsg.style.display = 'block';
+                
+                // Redirect to homepage after 2 seconds
+                setTimeout(() => {
+                    window.location.href = 'index.html';
+                }, 2000);
+            }
+        });
+    </script>
+</body>
+</html>
